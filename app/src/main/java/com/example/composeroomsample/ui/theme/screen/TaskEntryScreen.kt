@@ -1,8 +1,7 @@
-package com.example.composeroomsample.ui.theme.task
+package com.example.composeroomsample.ui.theme.screen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -15,23 +14,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.composeroomsample.TaskDetails
-import com.example.composeroomsample.TaskEntryViewModel
-import com.example.composeroomsample.TaskUiState
+import com.example.composeroomsample.viewmodel.TaskDetails
+import com.example.composeroomsample.viewmodel.TaskEntryViewModel
+import com.example.composeroomsample.viewmodel.TaskUiState
 import com.example.composeroomsample.database.TaskDatabase
 import com.example.composeroomsample.database.repository.TasksRepository
 import kotlinx.coroutines.launch
 
-
-@Preview
-@Composable
-fun TaskEntryScreenPreview() {
-    TaskEntryScreen()
-}
-
-
 @Composable
 fun TaskEntryScreen(
+    navigateToHome: () -> Unit,
 ) {
     val repository = TasksRepository(TaskDatabase.getDatabase(LocalContext.current).taskDao())
     val viewModel: TaskEntryViewModel = viewModel {
@@ -42,10 +34,12 @@ fun TaskEntryScreen(
     TaskEntryBody(
         taskUiState = viewModel.taskUiState,
         onTaskValueChange = viewModel::updateUiState,
-        onSaveClick = { coroutineScope.launch {
+        onSaveClick = {
+            coroutineScope.launch {
             viewModel.saveItem()
-        } })
-
+            }
+            navigateToHome()
+        })
 }
 
 @Composable
@@ -93,15 +87,23 @@ fun TaskInputForm(
             onValueChange = { onValueChange(taskDetails.copy(detail = it)) },
             enabled = enabled,
         )
-
     }
 }
+
+/*
+@Preview
+@Composable
+fun TaskEntryScreenPreview() {
+    TaskEntryScreen(
+    )
+}
+ */
 
 @Preview
 @Composable
 fun TaskInputFormPreview() {
     val taskUiState = TaskUiState()
-    val onTaskValueChange: (TaskDetails) -> Unit = {}
+    val onTaskValueChange: (TaskDetails) -> Unit = { }
     TaskInputForm(
         taskDetails = taskUiState.taskDetails,
         onValueChange = onTaskValueChange,
