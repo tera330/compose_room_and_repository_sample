@@ -19,7 +19,7 @@ fun AppNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
-    val navController = rememberNavController()
+    // val navController = rememberNavController()
 
    NavHost(
        navController = navController,
