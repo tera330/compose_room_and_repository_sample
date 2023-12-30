@@ -37,6 +37,12 @@ fun TaskDetails.toTask(): Task = Task(
     detail = detail
 )
 
+fun Task.toTaskDetails() : TaskDetails = TaskDetails(
+    id = id,
+    title = title,
+    detail = detail
+)
+
 data class TaskUiState(
     val taskDetails: TaskDetails = TaskDetails(),
     val isEntryValid: Boolean = false

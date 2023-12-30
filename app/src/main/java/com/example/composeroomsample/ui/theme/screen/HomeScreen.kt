@@ -1,5 +1,7 @@
 package com.example.composeroomsample.ui.theme.screen
 
+import android.util.Log
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -25,23 +27,24 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.rememberNavController
 import com.example.composeroomsample.database.Task
 import com.example.composeroomsample.database.TaskDatabase
 import com.example.composeroomsample.database.repository.TasksRepository
-import com.example.composeroomsample.ui.theme.navigation.Screen
 import com.example.composeroomsample.viewmodel.HomeViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     navigateToTaskEntry: () -> Unit,
+    navigateToTaskDetail: (Int) -> Unit,
 ) {
     val repository = TasksRepository(TaskDatabase.getDatabase(LocalContext.current).taskDao())
     val viewModel: HomeViewModel = viewModel {
         HomeViewModel(repository)
     }
     val homeUiState by viewModel.homeUiState.collectAsState()
+
+    Log.d("result", homeUiState.taskList.toString() + "タスクリスト")
 
     Scaffold(
         floatingActionButton = {
@@ -58,7 +61,7 @@ fun HomeScreen(
     ) { innerPadding ->
         HomeBody(
             taskList = homeUiState.taskList,
-            onItemClick = {},
+            onItemClick =  navigateToTaskDetail,
             modifier = Modifier
                 .padding(innerPadding)
         )
@@ -83,7 +86,7 @@ private fun HomeBody(
             )
             TaskList(
                 taskList = taskList,
-                onItemClick = {  }, // todo int型を渡す
+                onItemClick = { onItemClick(it.id) },
                 modifier = Modifier
             )
         }
@@ -93,7 +96,7 @@ private fun HomeBody(
 @Composable
 private fun TaskList(
     taskList: List<Task>,
-    onItemClick: (Int) -> Unit,
+    onItemClick: (Task) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(modifier = modifier) {
@@ -101,7 +104,7 @@ private fun TaskList(
             TaskCard(
                 task = task,
                 modifier = Modifier
-                //  todo  .clickable { onItemClick(task) }
+                    .clickable{ onItemClick(task)}
             )
         }
     }

@@ -24,3 +24,4 @@ class HomeViewModel(private val tasksRepository: TasksRepository): ViewModel() {
 }
 
 data class HomeUiState(val taskList: List<Task> = listOf())
+
