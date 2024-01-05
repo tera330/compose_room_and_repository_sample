@@ -10,6 +10,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -21,10 +22,13 @@ import com.example.composeroomsample.database.TaskDatabase
 import com.example.composeroomsample.database.repository.TasksRepository
 import com.example.composeroomsample.viewmodel.TaskDetailViewModel
 import com.example.composeroomsample.viewmodel.TaskDetails
+import kotlinx.coroutines.launch
 
 @Composable
 fun TaskDetailScreen(
-    taskId: (Int),
+    taskId: Int,
+    navigateBack: () -> Unit,
+    navigateToTaskEdit: (Int) -> Unit
 ) {
     val repository = TasksRepository(TaskDatabase.getDatabase(LocalContext.current).taskDao())
     val viewModel: TaskDetailViewModel = viewModel {
@@ -41,15 +45,26 @@ fun TaskDetailScreen(
             text = "タスク詳細"
         )
         TaskDetailsBody(
-            taskDetails = uiState.value.taskDetails,)
+            taskId = taskId,
+            taskDetails = uiState.value.taskDetails,
+            viewModel = viewModel,
+            navigateBack = navigateBack,
+            navigateToTaskEdit = navigateToTaskEdit
+        )
     }
 }
 
 @Composable
 private fun TaskDetailsBody(
+    taskId: Int,
     taskDetails: TaskDetails,
-    modifier : Modifier = Modifier
+    modifier : Modifier = Modifier,
+    viewModel: TaskDetailViewModel,
+    navigateBack: () -> Unit,
+    navigateToTaskEdit: (Int) -> Unit
 ) {
+    val coroutineScope = rememberCoroutineScope()
+
     Column(
         modifier = modifier
             .fillMaxWidth(),
@@ -64,30 +79,27 @@ private fun TaskDetailsBody(
                 padding(top = 30.dp, bottom = 10.dp),
             horizontalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            Button(onClick = { /*TODO*/ }) {
+            Button(onClick = {
+                navigateToTaskEdit(taskId)
+                }
+            ) {
                 Text(
                     text = "編集",
                 )
             }
-            Button(onClick = {  }) {
+            Button(onClick = {
+                coroutineScope.launch {
+                    viewModel.deleteTask()
+                }
+                    navigateBack()
+                }
+            ) {
                 Text(
                     text = "消去"
                 )
             }
         }
     }
-}
-
-@Preview
-@Composable
-fun TaskDetailsBodyPreview() {
-    TaskDetailsBody(
-        taskDetails = TaskDetails(
-            id = 1,
-            title = "Sample Task Title",
-            detail = "Sample Task Details"
-        )
-    )
 }
 
 @Composable

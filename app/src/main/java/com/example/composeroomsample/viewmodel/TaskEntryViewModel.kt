@@ -1,6 +1,5 @@
 package com.example.composeroomsample.viewmodel
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -24,7 +23,6 @@ class TaskEntryViewModel(private val tasksRepository: TasksRepository): ViewMode
     }
 
     suspend fun saveItem() {
-        Log.d("result", validateInput().toString())
         if (validateInput()) {
             tasksRepository.insertItem(taskUiState.taskDetails.toTask())
         }
@@ -41,6 +39,11 @@ fun Task.toTaskDetails() : TaskDetails = TaskDetails(
     id = id,
     title = title,
     detail = detail
+)
+
+fun Task.toTaskUiState(isEntryValid: Boolean = false): TaskUiState = TaskUiState(
+    taskDetails = this.toTaskDetails(),
+    isEntryValid = isEntryValid
 )
 
 data class TaskUiState(

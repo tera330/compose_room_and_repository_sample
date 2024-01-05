@@ -35,18 +35,21 @@ fun TaskEntryScreen(
     val coroutineScope = rememberCoroutineScope()
 
     TaskEntryBody(
+        headerText = "タスク入力",
         taskUiState = viewModel.taskUiState,
         onTaskValueChange = viewModel::updateUiState,
         onSaveClick = {
             coroutineScope.launch {
-            viewModel.saveItem()
+                viewModel.saveItem()
             }
             navigateToHome()
-        })
+        }
+    )
 }
 
 @Composable
 fun TaskEntryBody(
+    headerText: String,
     taskUiState: TaskUiState,
     onTaskValueChange: (TaskDetails) -> Unit,
     onSaveClick: () -> Unit,
@@ -57,7 +60,7 @@ fun TaskEntryBody(
         modifier = modifier.padding(16.dp)
     ) {
         Text(
-            text = "タスク入力",
+            text = headerText,
             fontSize = 30.sp
         )
         TaskInputForm(
