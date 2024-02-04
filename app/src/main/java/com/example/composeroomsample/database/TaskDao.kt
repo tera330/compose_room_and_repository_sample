@@ -1,5 +1,6 @@
 package com.example.composeroomsample.database
 
+import android.util.Log
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -24,4 +25,7 @@ interface TaskDao {
 
     @Query("SELECT * from tasks ORDER BY id ASC")
     fun getAllItems(): Flow<List<Task>>
+
+    @Query("DELETE from tasks WHERE id IN(:ids)")
+    suspend fun deleteItemsByIds(ids: List<Int>)
 }
